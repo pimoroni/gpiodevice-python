@@ -12,7 +12,7 @@ def get_gpiochip_labels():
     raise RuntimeError("No compatible platform detected!")
 
 
-def platform_name():
+def get_name():
     for platform in PLATFORMS:
         name = platform.get_name()
         if name is not None:
