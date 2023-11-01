@@ -24,3 +24,8 @@ if action == "find_chip_by_label":
         chip = gd.find_chip_by_label(sys.argv[2])
     print(chip)
     sys.exit(0)
+
+if action == "find_chip_by_platform":
+    chip = gd.find_chip_by_platform()
+    print(chip)
+    sys.exit(0)
