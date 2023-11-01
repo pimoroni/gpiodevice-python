@@ -1,0 +1,26 @@
+#!/bin/env python3
+import sys
+
+import gpiodevice as gd
+
+action = sys.argv[1]
+
+gd.friendly_errors = True
+
+
+if action == "find_chip_by_pins":
+    chip = gd.find_chip_by_pins(sys.argv[2], ignore_claimed=False)
+    print(chip)
+    sys.exit(0)
+
+if action == "find_chip_by_label":
+    if len(sys.argv) == 4:
+        pins = {}
+        for pin in sys.argv[3].split(","):
+            label, line = pin.split(":")
+            pins[label] = int(line)
+        chip = gd.find_chip_by_label(sys.argv[2], pins=pins)
+    else:
+        chip = gd.find_chip_by_label(sys.argv[2])
+    print(chip)
+    sys.exit(0)
