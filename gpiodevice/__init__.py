@@ -38,7 +38,7 @@ def check_pins_available(chip: gpiod.Chip, pins) -> bool:
 
         if line_info.used:
             used += 1
-            yield errors.GPIOError(f"{label}: (line {pin}, {line_info.label}) currently claimed by {line_info.consumer}")
+            yield errors.GPIOError(f"{label}: (line {pin}, {line_info.name}) currently claimed by {line_info.consumer}")
 
     if used and friendly_errors:
         raise errors.ErrorDigest("some pins we need are in use!")
@@ -100,24 +100,24 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
                 yield errors.GPIOError(f"{path}: Permission error!")
 
             label = chip.get_info().label
-            errors = False
+            failed = False
 
             for id in pins:
                 try:
                     offset = chip.line_offset_from_id(id)
                     yield errors.GPIOFound(f"{id}: (line {offset}) found - {path} ({label})!")
                 except OSError:
-                    errors = True
+                    failed = True
                     yield errors.GPIONotFound(f"{id}: not found - {path} ({label})!")
                     continue
 
                 line_info = chip.get_line_info(offset)
 
                 if not ignore_claimed and line_info.used:
-                    errors = True
-                    yield errors.GPIOError(f"{id}: (line {offset}, {line_info.label}) currently claimed by {line_info.consumer}")
+                    failed = True
+                    yield errors.GPIOError(f"{id}: (line {offset}, {line_info.name}) currently claimed by {line_info.consumer}")
 
-            if not errors:
+            if not failed:
                 return chip
 
     if friendly_errors:
