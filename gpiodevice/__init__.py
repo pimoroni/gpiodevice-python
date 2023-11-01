@@ -1,4 +1,6 @@
 import glob
+import sys
+from pathlib import Path
 
 import gpiod
 
@@ -26,7 +28,7 @@ def check_pins_available(chip: gpiod.Chip, pins) -> bool:
 
     used = 0
 
-    for (label, pin) in pins.items():
+    for label, pin in pins.items():
         if isinstance(pin, str):
             try:
                 pin = chip.line_offset_from_id(pin)
@@ -102,20 +104,20 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
             label = chip.get_info().label
             failed = False
 
-            for id in pins:
+            for pin_id in pins:
                 try:
-                    offset = chip.line_offset_from_id(id)
-                    yield errors.GPIOFound(f"{id}: (line {offset}) found - {path} ({label})!")
+                    offset = chip.line_offset_from_id(pin_id)
+                    yield errors.GPIOFound(f"{pin_id}: (line {offset}) found - {path} ({label})!")
                 except OSError:
                     failed = True
-                    yield errors.GPIONotFound(f"{id}: not found - {path} ({label})!")
+                    yield errors.GPIONotFound(f"{pin_id}: not found - {path} ({label})!")
                     continue
 
                 line_info = chip.get_line_info(offset)
 
                 if not ignore_claimed and line_info.used:
                     failed = True
-                    yield errors.GPIOError(f"{id}: (line {offset}, {line_info.name}) currently claimed by {line_info.consumer}")
+                    yield errors.GPIOError(f"{pin_id}: (line {offset}, {line_info.name}) currently claimed by {line_info.consumer}")
 
             if not failed:
                 return chip
@@ -129,3 +131,24 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
 def find_chip_by_platform():
     labels = platform.get_gpiochip_labels()
     return find_chip_by_label(labels)
+
+
+def get_pin(pin, label, settings):
+    chip = find_chip_by_pins(pin)
+    line_offset = chip.line_offset_from_id(pin)
+    consumer = Path(sys.argv[0]).stem
+    lines = chip.request_lines(consumer=f"{consumer}-{label}", config={line_offset: settings})
+    return lines, line_offset
+
+
+def get_pins_for_platform(platforms):
+    this_platform = platform.get_name()
+
+    result = []
+
+    for check_platform, pins in platforms.items():
+        if this_platform.startswith(check_platform):
+            for user_label, (pin, settings) in pins.items():
+                result.append(get_pin(pin, user_label, settings))
+
+    return result
