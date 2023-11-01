@@ -100,6 +100,7 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
                 chip = gpiod.Chip(path)
             except PermissionError:
                 yield errors.GPIOError(f"{path}: Permission error!")
+                continue
 
             label = chip.get_info().label
             failed = False
