@@ -6,7 +6,7 @@ import gpiod
 
 from . import errors, platform
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 
 CHIP_GLOB = "/dev/gpiochip*"
