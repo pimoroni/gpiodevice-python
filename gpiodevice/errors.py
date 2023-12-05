@@ -34,7 +34,7 @@ class GPIOFound(GPIOBaseError):
         GPIOBaseError.__init__(self, message, icon)
 
 
-def collect(fn):
+def collect(fn, fatal=False):
     def wrapper(*args, **kwargs):
         errors = []
 

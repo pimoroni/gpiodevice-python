@@ -12,15 +12,15 @@ __version__ = "0.0.2"
 CHIP_GLOB = "/dev/gpiochip*"
 
 
+# Deprecated
 friendly_errors: bool = False
 
 
 @errors.collect
-def check_pins_available(chip: gpiod.Chip, pins) -> bool:
+def check_pins_available(chip: gpiod.Chip, pins, fatal: bool = True) -> bool:
     """Check if a list of pins are in use on a given gpiochip device.
 
-    Raise a RuntimeError with a friendly list of in-use pins and their consumer if
-    any are in used.
+    If any pins are used: raises a helpful list of pins and their consumer if fatal == True, otherwise returns False.
 
     """
     if pins is None:
@@ -42,17 +42,19 @@ def check_pins_available(chip: gpiod.Chip, pins) -> bool:
             used += 1
             yield errors.GPIOError(f"{label}: (line {pin}, {line_info.name}) currently claimed by {line_info.consumer}")
 
-    if used and friendly_errors:
+    if used and fatal:
         raise errors.ErrorDigest("some pins we need are in use!")
 
     return used == 0
 
 
 @errors.collect
-def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (int, str)] = None):
+def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (int, str)] = None, fatal: bool = True):
     """Try to find a gpiochip device matching one of a set of labels.
 
     Raise a RuntimeError with a friendly error digest if one is not found.
+
+    If no suitable gpiochip is found: raises a helpful digest of errors if fatal == True, otherwise returns None.
 
     """
     if isinstance(labels, str):
@@ -73,21 +75,26 @@ def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (in
             else:
                 yield errors.GPIONotFound(f"{path}: this is not the GPIO we're looking for! ({label})")
 
-    if friendly_errors:
+    if fatal:
         raise errors.ErrorDigest("suitable gpiochip device not found!")
 
     return None
 
 
 @errors.collect
-def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool = False):
+def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool = False, fatal: bool = True):
     """Try to find a gpiochip device that includes all of the named pins.
 
     Does not care whether pins are in use or not.
 
     "pins" can be a single string, a list/tuple or a comma-separated string of names.
 
+    If no suitable gpiochip is found: raises a helpful digest of errors if fatal == True, otherwise returns None.
+
     """
+    if isinstance(pins, int):
+        pins = (pins,)
+
     if isinstance(pins, str):
         if "," in pins:
             pins = [pin.strip() for pin in pins.split(",")]
@@ -106,6 +113,11 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
             failed = False
 
             for pin_id in pins:
+                if isinstance(pin_id, int):
+                    failed = True
+                    yield errors.GPIOError(f'{path}: {pin_id} is an int and has been skipped, did you mean "PIN{pin_id}" or "GPIO{pin_id}"?')
+                    continue
+
                 try:
                     offset = chip.line_offset_from_id(pin_id)
                     yield errors.GPIOFound(f"{pin_id}: (line {offset}) found - {path} ({label})!")
@@ -123,7 +135,7 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
             if not failed:
                 return chip
 
-    if friendly_errors:
+    if fatal:
         raise errors.ErrorDigest("suitable gpiochip not found!")
 
     return None
