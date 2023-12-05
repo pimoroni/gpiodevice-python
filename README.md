@@ -1,7 +1,7 @@
 # gpiodevice
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/pimoroni/gpiodevice-python/test.yml?branch=main)](https://github.com/pimoroni/gpiodevice-python/actions/workflows/test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/pimoroni/gpiodevice-python/badge.svg?branch=master)](https://coveralls.io/github/pimoroni/gpiodevice-python?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/pimoroni/gpiodevice-python/badge.svg?branch=main)](https://coveralls.io/github/pimoroni/gpiodevice-python?branch=main)
 [![PyPi Package](https://img.shields.io/pypi/v/gpiodevice.svg)](https://pypi.python.org/pypi/gpiodevice)
 [![Python Versions](https://img.shields.io/pypi/pyversions/gpiodevice.svg)](https://pypi.python.org/pypi/gpiodevice)
 
