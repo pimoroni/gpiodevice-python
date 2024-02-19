@@ -1,4 +1,5 @@
 import glob
+import re
 import sys
 from pathlib import Path
 
@@ -68,7 +69,7 @@ def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (in
                 yield errors.GPIOError(f"{path}: Permission error!")
                 continue
 
-            if label in labels:
+            if re.match("|".join(labels), label):
                 chip = gpiod.Chip(path)
                 if check_pins_available(chip, pins):
                     return chip
