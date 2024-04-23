@@ -148,6 +148,10 @@ def find_chip_by_platform():
 
 
 def get_pin(pin, label, settings):
+    # Do nothing if given a user specified LineRequest/offset tuple
+    if isinstance(pin, tuple):
+        return pin
+
     chip = find_chip_by_pins(pin)
     line_offset = chip.line_offset_from_id(pin)
     consumer = Path(sys.argv[0]).stem
