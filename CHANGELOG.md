@@ -1,5 +1,11 @@
 # Changelog
 
+0.0.4
+_____
+
+* Gracefully handle a tuple being passed to get_pin
+* Match all pinctrl- gpiodevices for RPi in get_gpiochip_labels
+
 0.0.3
 -----
 
