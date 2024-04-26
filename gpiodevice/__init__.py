@@ -152,8 +152,13 @@ def get_pin(pin, label, settings):
     if isinstance(pin, tuple):
         return pin
 
-    chip = find_chip_by_pins(pin)
-    line_offset = chip.line_offset_from_id(pin)
+    if isinstance(pin, int):
+        chip = find_chip_by_platform()
+        line_offset = pin
+    else:
+        chip = find_chip_by_pins(pin)
+        line_offset = chip.line_offset_from_id(pin)
+
     consumer = Path(sys.argv[0]).stem
     lines = chip.request_lines(consumer=f"{consumer}-{label}", config={line_offset: settings})
     return lines, line_offset
