@@ -1,5 +1,10 @@
 # Changelog
 
+0.0.5
+-----
+
+* Add support for int type in get_pin
+
 0.0.4
 -----
 
