@@ -12,4 +12,3 @@ A GPIO counterpart to [i2cdevice](https://github.com/pimoroni/i2cdevice-python),
 gpiodevice is a simple middleware library intended to make some user-facing aspects of interfacing with Linux's GPIO character device ABI (via gpiod) simpler and friendlier.
 
 gpiodevice is not intended to replace gpiod, but collects some common patterns into a reusable library for GPIO-based Python projects.
-
