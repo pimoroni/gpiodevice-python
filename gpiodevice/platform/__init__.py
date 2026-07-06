@@ -1,4 +1,4 @@
-from . import alienware, pi, radxa, jetson
+from . import alienware, jetson, pi, radxa
 
 PLATFORMS = (pi, alienware, radxa, jetson)
 
