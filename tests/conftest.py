@@ -8,8 +8,10 @@ import pytest
 def gpiod():
     gpiopd = mock.Mock()
     sys.modules["gpiod"] = gpiopd
-    yield gpiod
+    sys.modules["gpiod.line"] = mock.Mock()
+    yield gpiopd
     del sys.modules["gpiod"]
+    del sys.modules["gpiod.line"]
 
 
 @pytest.fixture(scope="function", autouse=True)

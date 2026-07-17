@@ -7,7 +7,7 @@ import gpiod
 
 from . import errors, platform
 
-__version__ = "0.0.5"
+__version__ = "0.1.0"
 
 
 CHIP_GLOB = "/dev/gpiochip*"
@@ -175,3 +175,7 @@ def get_pins_for_platform(platforms):
                 result.append(get_pin(pin, user_label, settings))
 
     return result
+
+
+# Edge / interrupt helpers (imported last to avoid a cycle with watch_pin's use of get_pin)
+from .watch import Watch, watch_pin, wait_for_edge  # noqa: E402
