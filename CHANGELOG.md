@@ -1,5 +1,11 @@
 # Changelog
 
+0.1.0
+-----
+
+* New: Watch, watch_pin and wait_for_edge edge/interrupt helpers
+* New: Nvidia Jetson platform support
+
 0.0.5
 -----
 

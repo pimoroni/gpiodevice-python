@@ -48,7 +48,7 @@ Homepage = "https://www.pimoroni.com"
 [dependency-groups]
 dev = [
     "check-manifest",
-    "ruff",
+    "ruff==0.15.20",
     "codespell",
     "pre-commit",
     "twine",
@@ -127,7 +127,7 @@ ignore = [
     '.pre-commit-config.yaml',
 ]
 
-[pimoroni]
+[tool.pimoroni]
 apt_packages = []
 configtxt = []
 commands = []

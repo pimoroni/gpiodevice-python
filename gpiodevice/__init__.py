@@ -182,4 +182,4 @@ def get_pins_for_platform(platforms):
 
 
 # Edge / interrupt helpers (imported last to avoid a cycle with watch_pin's use of get_pin)
-from .watch import Watch, wait_for_edge, watch_pin  # noqa: E402
+from .watch import Watch, wait_for_edge, watch_pin  # noqa: E402,F401

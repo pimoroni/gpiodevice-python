@@ -2,8 +2,8 @@ import os
 import select
 import sys
 import threading
+from unittest import mock
 
-import mock
 import pytest
 
 
