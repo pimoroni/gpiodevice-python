@@ -11,6 +11,7 @@ Three entry points:
 * :class:`Watch` -- a background thread that dispatches per-line callbacks on each edge.
 * :func:`watch_pin` -- convenience: request a single pin and return a started :class:`Watch`.
 """
+import contextlib
 import select
 import threading
 import time
@@ -110,10 +111,8 @@ class Watch:
         """Stop the thread and, if we own the request, release it."""
         self.stop()
         if self._manage_request:
-            try:
+            with contextlib.suppress(Exception):
                 self._request.release()
-            except Exception:
-                pass
 
     def __enter__(self):
         return self.start()

@@ -3,6 +3,7 @@ import re
 import sys
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+from typing import Optional
 
 import gpiod
 
@@ -54,7 +55,7 @@ def check_pins_available(chip: gpiod.Chip, pins, fatal: bool = True) -> bool:
 
 
 @errors.collect
-def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (int, str)] = None, fatal: bool = True):
+def find_chip_by_label(labels: (list[str], tuple[str], str), pins: Optional[dict[str, (int, str)]] = None, fatal: bool = True):
     """Try to find a gpiochip device matching one of a set of labels.
 
     Raise a RuntimeError with a friendly error digest if one is not found.
@@ -101,10 +102,7 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
         pins = (pins,)
 
     if isinstance(pins, str):
-        if "," in pins:
-            pins = [pin.strip() for pin in pins.split(",")]
-        else:
-            pins = (pins,)
+        pins = [pin.strip() for pin in pins.split(",")] if "," in pins else (pins,)
 
     for path in glob.glob(CHIP_GLOB):
         if gpiod.is_gpiochip_device(path):

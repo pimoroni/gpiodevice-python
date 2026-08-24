@@ -1,9 +1,10 @@
 def get_name():
     try:
-        model = open("/sys/devices/virtual/dmi/id/board_name", "r").read()
+        with open("/sys/devices/virtual/dmi/id/board_name") as f:
+            model = f.read()
         if model.startswith("Alienware m15"):
             return model
-    except IOError:
+    except OSError:
         pass
 
     return None

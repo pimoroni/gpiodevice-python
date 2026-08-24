@@ -1,3 +1,4 @@
+import contextlib
 import os
 import select
 import sys
@@ -39,10 +40,8 @@ class FakeRequest:
         os.write(self._w, b"x")
 
     def read_edge_events(self):
-        try:
+        with contextlib.suppress(BlockingIOError):
             os.read(self._r, 4096)
-        except BlockingIOError:
-            pass
         events, self._events = self._events, []
         return events
 

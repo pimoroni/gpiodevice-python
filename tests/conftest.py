@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from unittest import mock
 
@@ -17,7 +18,5 @@ def gpiod():
 @pytest.fixture(scope="function", autouse=True)
 def cleanup():
     yield
-    try:
+    with contextlib.suppress(KeyError):
         del sys.modules["gpiodevice"]
-    except KeyError:
-        pass
