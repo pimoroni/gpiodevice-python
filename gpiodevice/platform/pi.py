@@ -12,6 +12,8 @@ def get_name():
 
 def get_gpiochip_labels():
     if get_name() is not None:
+        # Matched as a regular expression, not a glob: "pinctrl-*" is "pinctrl"
+        # followed by any number of dashes, which prefix-matches every label below.
         return (
             "pinctrl-*",
             # "pinctrl-rp1" - Pi 5 - Bookworm, /dev/gpiochip4 maybe

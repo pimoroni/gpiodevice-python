@@ -9,6 +9,7 @@ def get_name():
 
     return None
 
+
 def get_gpiochip_labels():
     if get_name() is not None:
         return (
