@@ -5,6 +5,8 @@
 
 * New: Watch, watch_pin and wait_for_edge edge/interrupt helpers
 * New: Nvidia Jetson platform support
+* Fix: find_chip_by_pins raised SystemError instead of returning None when fatal=False
+* Docs: document the API in README.md
 
 0.0.5
 -----
