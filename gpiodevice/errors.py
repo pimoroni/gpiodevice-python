@@ -1,3 +1,4 @@
+import functools
 import os
 
 DEBUG = os.getenv("GPIODEVICE_DEBUG", None) is not None
@@ -35,6 +36,7 @@ class GPIOFound(GPIOBaseError):
 
 
 def collect(fn, fatal=False):
+    @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         errors = []
 
