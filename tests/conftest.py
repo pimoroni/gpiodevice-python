@@ -1,6 +1,7 @@
+import contextlib
 import sys
+from unittest import mock
 
-import mock
 import pytest
 
 
@@ -8,14 +9,14 @@ import pytest
 def gpiod():
     gpiopd = mock.Mock()
     sys.modules["gpiod"] = gpiopd
-    yield gpiod
+    sys.modules["gpiod.line"] = mock.Mock()
+    yield gpiopd
     del sys.modules["gpiod"]
+    del sys.modules["gpiod.line"]
 
 
 @pytest.fixture(scope="function", autouse=True)
 def cleanup():
     yield
-    try:
+    with contextlib.suppress(KeyError):
         del sys.modules["gpiodevice"]
-    except KeyError:
-        pass

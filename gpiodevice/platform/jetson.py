@@ -1,8 +1,8 @@
 def get_name():
     try:
-        with open("/sys/devices/virtual/dmi/id/board_name") as f:
+        with open("/proc/device-tree/model") as f:
             model = f.read()
-        if model.startswith("Alienware m15"):
+        if model.startswith("NVIDIA Jetson"):
             return model
     except OSError:
         pass
@@ -12,6 +12,9 @@ def get_name():
 
 def get_gpiochip_labels():
     if get_name() is not None:
-        return ("INT3450:00",)
+        return (
+            "tegra234-gpio-aon",
+            "tegra234-gpio",
+        )
 
     return None

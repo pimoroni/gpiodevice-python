@@ -1,13 +1,18 @@
 import glob
 import re
 import sys
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+from typing import Optional, Union
 
 import gpiod
 
 from . import errors, platform
 
-__version__ = "0.0.5"
+try:
+    __version__ = version("gpiodevice")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
 
 
 CHIP_GLOB = "/dev/gpiochip*"
@@ -50,7 +55,7 @@ def check_pins_available(chip: gpiod.Chip, pins, fatal: bool = True) -> bool:
 
 
 @errors.collect
-def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (int, str)] = None, fatal: bool = True):
+def find_chip_by_label(labels: Union[list[str], tuple[str, ...], str], pins: Optional[dict[str, Union[int, str]]] = None, fatal: bool = True):
     """Try to find a gpiochip device matching one of a set of labels.
 
     Raise a RuntimeError with a friendly error digest if one is not found.
@@ -83,7 +88,7 @@ def find_chip_by_label(labels: (list[str], tuple[str], str), pins: dict[str, (in
 
 
 @errors.collect
-def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool = False, fatal: bool = True):
+def find_chip_by_pins(pins: Union[list[str], tuple[str, ...], str, int], ignore_claimed: bool = False, fatal: bool = True):
     """Try to find a gpiochip device that includes all of the named pins.
 
     Does not care whether pins are in use or not.
@@ -97,10 +102,7 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
         pins = (pins,)
 
     if isinstance(pins, str):
-        if "," in pins:
-            pins = [pin.strip() for pin in pins.split(",")]
-        else:
-            pins = (pins,)
+        pins = [pin.strip() for pin in pins.split(",")] if "," in pins else (pins,)
 
     for path in glob.glob(CHIP_GLOB):
         if gpiod.is_gpiochip_device(path):
@@ -135,6 +137,11 @@ def find_chip_by_pins(pins: (list[str], tuple[str], str), ignore_claimed: bool =
 
             if not failed:
                 return chip
+
+            # Close chips we're not returning, rather than leaving them to be
+            # finalised later. gpiod's close() raises SystemError if it runs while
+            # an exception is propagating, which happens as this generator returns.
+            chip.close()
 
     if fatal:
         raise errors.ErrorDigest("suitable gpiochip not found!")
@@ -175,3 +182,7 @@ def get_pins_for_platform(platforms):
                 result.append(get_pin(pin, user_label, settings))
 
     return result
+
+
+# Edge / interrupt helpers (imported last to avoid a cycle with watch_pin's use of get_pin)
+from .watch import Watch, wait_for_edge, watch_pin  # noqa: E402,F401
