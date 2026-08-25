@@ -138,6 +138,11 @@ def find_chip_by_pins(pins: Union[list[str], tuple[str, ...], str, int], ignore_
             if not failed:
                 return chip
 
+            # Close chips we're not returning, rather than leaving them to be
+            # finalised later. gpiod's close() raises SystemError if it runs while
+            # an exception is propagating, which happens as this generator returns.
+            chip.close()
+
     if fatal:
         raise errors.ErrorDigest("suitable gpiochip not found!")
 
