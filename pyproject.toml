@@ -48,7 +48,7 @@ Homepage = "https://www.pimoroni.com"
 [dependency-groups]
 dev = [
     "check-manifest",
-    "ruff==0.16.4",
+    "ruff==0.16.5",
     "codespell",
     "pre-commit",
     "twine",
