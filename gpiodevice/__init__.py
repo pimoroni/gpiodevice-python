@@ -1,13 +1,17 @@
 import glob
 import re
 import sys
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import gpiod
 
 from . import errors, platform
 
-__version__ = "0.0.5"
+try:
+    __version__ = version("gpiodevice")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
 
 
 CHIP_GLOB = "/dev/gpiochip*"
