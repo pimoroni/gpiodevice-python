@@ -43,13 +43,13 @@ def collect(fn, fatal=False):
         while True:
             try:
                 errors.append(next(i))
-            except StopIteration as e:
+            except StopIteration as e:  # noqa: PERF203
                 return e.value
             except ErrorDigest as e:
                 msg = f"{e}\n" + "\n".join([str(e) for e in errors])
                 if DEBUG:
                     raise RuntimeError(msg) from None
                 else:
-                    raise SystemExit(f"Woah there, {msg}")
+                    raise SystemExit(f"Woah there, {msg}") from None
 
     return wrapper

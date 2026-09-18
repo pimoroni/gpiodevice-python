@@ -1,9 +1,10 @@
 def get_name():
     try:
-        model = open("/proc/device-tree/model", "r").read()
+        with open("/proc/device-tree/model") as f:
+            model = f.read()
         if model.startswith("Raspberry Pi"):
             return model
-    except IOError:
+    except OSError:
         pass
 
     return None
